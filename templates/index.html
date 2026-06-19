@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrediShield AI | Intelligent Credit Scoring Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h2>CrediShield <span>AI</span></h2>
+            </div>
+            
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="scoring-tab">
+                    <i class="fa-solid fa-user-check"></i>
+                    <span>Applicant Scoring</span>
+                </button>
+                <button class="nav-item" data-tab="analytics-tab">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Model Analytics</span>
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <p>Engine: <strong>{{ best_model }}</strong></p>
+                <div class="status-indicator">
+                    <span class="pulse-dot"></span>
+                    <span>System Active</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="content-header">
+                <div>
+                    <h1>Credit Risk Assessment Dashboard</h1>
+                    <p class="subtitle">Evaluate customer creditworthiness using advanced machine learning diagnostics.</p>
+                </div>
+                <div class="header-actions">
+                    <div class="date-badge">
+                        <i class="fa-regular fa-calendar"></i>
+                        <span id="current-date">June 19, 2026</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- TAB 1: APPLICANT SCORING -->
+            <section id="scoring-tab" class="tab-content active">
+                <div class="scoring-grid">
+                    <!-- Form Card -->
+                    <div class="glass-card form-card">
+                        <div class="card-header">
+                            <i class="fa-solid fa-address-card"></i>
+                            <h3>Applicant Information Form</h3>
+                        </div>
+                        <form id="credit-form" class="credit-form">
+                            <!-- Section: Demographics & Employment -->
+                            <div class="form-section-title">Demographics & Employment</div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="Age">Age</label>
+                                    <input type="number" id="Age" name="Age" min="18" max="100" value="35" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="Education_Level">Education Level</label>
+                                    <select id="Education_Level" name="Education_Level" required>
+                                        <option value="High School">High School</option>
+                                        <option value="Bachelor" selected>Bachelor</option>
+                                        <option value="Master">Master</option>
+                                        <option value="PhD">PhD</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="Employment_Duration_Years">Employment Stability (Years)</label>
+                                    <input type="number" id="Employment_Duration_Years" name="Employment_Duration_Years" min="0" max="50" step="0.5" value="4.5" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="Annual_Income">Annual Income ($)</label>
+                                    <input type="number" id="Annual_Income" name="Annual_Income" min="5000" max="1000000" step="500" value="65000" required>
+                                </div>
+                            </div>
+
+                            <!-- Section: Assets & Existing Liabilities -->
+                            <div class="form-section-title">Assets & Existing Debt</div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="Savings_Balance">Savings Account Balance ($)</label>
+                                    <input type="number" id="Savings_Balance" name="Savings_Balance" min="0" max="1000000" step="100" value="12000" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="Checking_Balance">Checking Account Balance ($)</label>
+                                    <input type="number" id="Checking_Balance" name="Checking_Balance" min="0" max="1000000" step="100" value="2500" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="Existing_Loans_Count">Active Loans Count</label>
+                                    <input type="number" id="Existing_Loans_Count" name="Existing_Loans_Count" min="0" max="10" value="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="Credit_Card_Utilization">Credit Card Utilization Ratio</label>
+                                    <div class="range-container">
+                                        <input type="range" id="Credit_Card_Utilization" name="Credit_Card_Utilization" min="0" max="1" step="0.01" value="0.28">
+                                        <span id="cc-util-val">28%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section: Requested Loan & Credit History -->
+                            <div class="form-section-title">Requested Loan & Credit History</div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="Loan_Amount">Requested Loan Amount ($)</label>
+                                    <input type="number" id="Loan_Amount" name="Loan_Amount" min="500" max="500000" step="500" value="20000" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="Loan_Duration_Months">Loan Term (Months)</label>
+                                    <select id="Loan_Duration_Months" name="Loan_Duration_Months" required>
+                                        <option value="12">12 Months</option>
+                                        <option value="24">24 Months</option>
+                                        <option value="36" selected>36 Months</option>
+                                        <option value="48">48 Months</option>
+                                        <option value="60">60 Months</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="Payment_History_Delay">Payment Delays (Last 12 Mths)</label>
+                                    <input type="number" id="Payment_History_Delay" name="Payment_History_Delay" min="0" max="12" value="0" required>
+                                </div>
+                                <div class="form-group checkbox-group">
+                                    <label for="Owns_Home" class="checkbox-label">
+                                        <input type="checkbox" id="Owns_Home" name="Owns_Home" value="1" checked>
+                                        <span>Owns Primary Home</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Run Risk Diagnostics
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Results Panel (Initially displays placeholder instruction, then dynamic details) -->
+                    <div class="glass-card result-card" id="result-panel">
+                        <div class="result-placeholder">
+                            <div class="placeholder-icon">
+                                <i class="fa-solid fa-calculator"></i>
+                            </div>
+                            <h3>Awaiting Risk Diagnostics</h3>
+                            <p>Fill out the application form on the left and submit it to see the credit scoring predictions, approval status, and financial health highlights.</p>
+                        </div>
+                        
+                        <!-- Dynamic Result Content (Hidden initially) -->
+                        <div class="result-content hidden" id="real-results">
+                            <div class="card-header">
+                                <i class="fa-solid fa-clipboard-check"></i>
+                                <h3>Decision & Risk Metrics</h3>
+                            </div>
+                            
+                            <!-- Score meter and Decision -->
+                            <div class="result-hero">
+                                <div class="score-radial">
+                                    <svg viewBox="0 0 100 100">
+                                        <circle cx="50" cy="50" r="42" class="gauge-bg" />
+                                        <circle cx="50" cy="50" r="42" class="gauge-fill" id="score-gauge" style="stroke-dasharray: 263; stroke-dashoffset: 263;" />
+                                    </svg>
+                                    <div class="score-display">
+                                        <span class="score-num" id="res-score">720</span>
+                                        <span class="score-label">FICO Approx.</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="decision-box">
+                                    <div class="decision-badge" id="res-decision">APPROVED</div>
+                                    <div class="risk-category-badge" id="res-category">EXCELLENT</div>
+                                    <p class="risk-desc" id="res-risk-desc">Very Low Default Risk</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Financial Diagnostics -->
+                            <div class="diagnostics-summary">
+                                <div class="diag-metric">
+                                    <span class="diag-label">Monthly Loan Instalment</span>
+                                    <span class="diag-value" id="res-installment">$583.33</span>
+                                </div>
+                                <div class="diag-metric">
+                                    <span class="diag-label">Debt-to-Income (DTI)</span>
+                                    <span class="diag-value" id="res-dti">10.8%</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Key Factors -->
+                            <div class="factors-section">
+                                <h4>Risk Factors Breakdown</h4>
+                                <div class="factors-lists">
+                                    <div class="factor-group positive">
+                                        <h5><i class="fa-solid fa-circle-check"></i> Positive Drivers</h5>
+                                        <ul id="pos-factors-list">
+                                            <!-- Dynamic items -->
+                                        </ul>
+                                    </div>
+                                    <div class="factor-group negative">
+                                        <h5><i class="fa-solid fa-triangle-exclamation"></i> Risks & Warnings</h5>
+                                        <ul id="neg-factors-list">
+                                            <!-- Dynamic items -->
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: MODEL ANALYTICS -->
+            <section id="analytics-tab" class="tab-content">
+                <div class="analytics-layout">
+                    <!-- Metrics Summary Grid -->
+                    <div class="metrics-cards-grid">
+                        <div class="glass-card metric-card">
+                            <div class="card-icon indigo"><i class="fa-solid fa-microchip"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-title">Optimal Algorithm</span>
+                                <span class="metric-val">{{ best_model }}</span>
+                            </div>
+                        </div>
+                        <div class="glass-card metric-card">
+                            <div class="card-icon emerald"><i class="fa-solid fa-circle-check"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-title">F1-Score</span>
+                                <span class="metric-val">
+                                    {% if metrics and best_model in metrics %}
+                                        {{ (metrics[best_model]['f1'] * 100) | round(1) }}%
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="glass-card metric-card">
+                            <div class="card-icon violet"><i class="fa-solid fa-chart-area"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-title">ROC-AUC</span>
+                                <span class="metric-val">
+                                    {% if metrics and best_model in metrics %}
+                                        {{ (metrics[best_model]['auc'] * 100) | round(1) }}%
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Table -->
+                    <div class="glass-card table-card">
+                        <div class="card-header">
+                            <i class="fa-solid fa-table-list"></i>
+                            <h3>Model Performance Benchmarking</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Classification Algorithm</th>
+                                        <th>Precision</th>
+                                        <th>Recall</th>
+                                        <th>F1-Score</th>
+                                        <th>ROC-AUC Score</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for model, m_data in metrics.items() %}
+                                    <tr class="{% if model == best_model %}selected-row{% endif %}">
+                                        <td><strong>{{ model }}</strong></td>
+                                        <td>{{ (m_data['precision'] * 100) | round(1) }}%</td>
+                                        <td>{{ (m_data['recall'] * 100) | round(1) }}%</td>
+                                        <td>{{ (m_data['f1'] * 100) | round(1) }}%</td>
+                                        <td>{{ (m_data['auc'] * 100) | round(1) }}%</td>
+                                        <td>
+                                            {% if model == best_model %}
+                                                <span class="row-badge active">Selected</span>
+                                            {% else %}
+                                                <span class="row-badge inactive">Candidate</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Visualizations Area -->
+                    <div class="charts-grid">
+                        <div class="glass-card chart-card">
+                            <div class="card-header">
+                                <i class="fa-solid fa-chart-line"></i>
+                                <h3>ROC Curves Comparison</h3>
+                            </div>
+                            <div class="chart-wrapper">
+                                <img src="{{ url_for('static', filename='images/roc_curve.png') }}" alt="ROC Curves Plot">
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card chart-card">
+                            <div class="card-header">
+                                <i class="fa-solid fa-arrows-spin"></i>
+                                <h3>Confusion Matrix (Best Model)</h3>
+                            </div>
+                            <div class="chart-wrapper">
+                                <img src="{{ url_for('static', filename='images/confusion_matrix.png') }}" alt="Confusion Matrix Plot">
+                            </div>
+                        </div>
+
+                        <div class="glass-card chart-card full-width">
+                            <div class="card-header">
+                                <i class="fa-solid fa-ranking-star"></i>
+                                <h3>Risk Factor Importance (Coefficients / Gini)</h3>
+                            </div>
+                            <div class="chart-wrapper">
+                                <img src="{{ url_for('static', filename='images/feature_importance.png') }}" alt="Feature Importance Plot">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
